@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mapa con Ubicaciones Fijas</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map { height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const ubicacionesFijas = [
+      { nombre: "Estación 1", coords: [-12.07, -77.05] },
+      { nombre: "Estación 2", coords: [-12.10, -77.04] },
+      { nombre: "Estación 3", coords: [-12.12, -77.02] }
+    ];
+
+    const map = L.map('map').setView([-12.07, -77.05], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Crear marcadores con tooltips permanentes
+    const marcadores = [];
+    ubicacionesFijas.forEach(ubic => {
+      const marker = L.marker(ubic.coords).addTo(map);
+      const tooltip = marker.bindTooltip(ubic.nombre, {
+        permanent: true,
+        direction: 'top',
+        offset: [0, -10]
+      }).openTooltip();
+      marcadores.push({ marker, coords: ubic.coords, nombre: ubic.nombre, tooltip });
+    });
+
+    // Función para calcular distancia entre dos coordenadas
+    function distancia(lat1, lon1, lat2, lon2) {
+      const R = 6371e3;
+      const φ1 = lat1 * Math.PI / 180;
+      const φ2 = lat2 * Math.PI / 180;
+      const Δφ = (lat2 - lat1) * Math.PI / 180;
+      const Δλ = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(Δφ / 2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    function encontrarMasCercano(userLat, userLon) {
+      let minDist = Infinity;
+      let marcadorCercano = null;
+      marcadores.forEach(m => {
+        const d = distancia(userLat, userLon, m.coords[0], m.coords[1]);
+        if (d < minDist) {
+          minDist = d;
+          marcadorCercano = m;
+        }
+      });
+      return marcadorCercano;
+    }
+
+    // No hacer zoom ni setView automático al localizar usuario
+    map.locate();
+
+    map.on('locationfound', e => {
+      // Marcador para el usuario con tooltip fijo "Tú"
+      L.circleMarker(e.latlng, {
+        radius: 8,
+        color: 'blue',
+        fillColor: '#30f',
+        fillOpacity: 0.6
+      }).addTo(map).bindTooltip("Tú", { permanent: true, direction: 'right' }).openTooltip();
+
+      // Encontrar estación más cercana
+      const masCercano = encontrarMasCercano(e.latitude, e.longitude);
+      if (masCercano) {
+        // Centrar mapa y hacer zoom en estación más cercana
+        map.setView(masCercano.coords, 16);
+
+        // Cambiar texto tooltip y resaltar estación en rojo
+        const nuevoTexto = `${masCercano.nombre} (más cercana)`;
+        masCercano.marker.unbindTooltip();
+        masCercano.marker.bindTooltip(nuevoTexto, {
+          permanent: true,
+          direction: 'top',
+          offset: [0, -10]
+        }).openTooltip();
+
+        masCercano.marker.setIcon(L.icon({
+          iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+          iconSize: [32, 32],
+          iconAnchor: [16, 32]
+        }));
+      }
+    });
+
+    map.on('locationerror', e => {
+      alert("No se pudo detectar tu ubicación.");
+    });
+  </script>
+</body>
+</html>
