@@ -64,7 +64,7 @@
       { num: 36, nombre: "Yunguyo",      lat: -16.30783333, lon: -69.07472222 },
       { num: 37, nombre: "Desaguadero",  lat: -16.56363889, lon: -69.03666667 },
       { num: 38, nombre: "Isla Suana",   lat: -16.32991667, lon: -68.85033333 },
-      { num: 39, nombre: "Pizacoma",,    lat: -16.90434722, lon: -69.36952778 },
+      { num: 39, nombre: "Pizacoma",     lat: -16.90434722, lon: -69.36952778 },
       { num: 40, nombre: "Mazo cruz",    lat: -16.73888889, lon: -69.71544444 },
       { num: 41, nombre: "Capazo",       lat: -17.18269167, lon: -69.73908889 }
     ];
@@ -77,9 +77,9 @@
 
     const marcadores = [];
     estaciones.forEach(est => {
-      const contenido = `<div class="tooltip-normal">#${est.num}<br>${est.nombre}`;
+      const contenido = `<div class="tooltip-normal">#${est.num}<br>${est.nombre}</div>`;
       const marker = L.marker([est.lat, est.lon]).addTo(map);
-      const tooltip = marker.bindTooltip(contenido, {
+      marker.bindTooltip(contenido, {
         permanent: true,
         direction: 'top',
         offset: [0, -10],
@@ -122,11 +122,11 @@
         fillOpacity: 0.6
       }).addTo(map).bindTooltip("Tú", { permanent: true, direction: 'right' }).openTooltip();
 
-      const masCercano = encontrarMasCercano(e.latitude, e.longitude);
+      const masCercano = encontrarMasCercano(e.latlng.lat, e.latlng.lng);
       if (masCercano) {
-        map.setView([masCercano.lat, masCercano.lon], 12); // 16 - 4 = 12
+        map.setView([masCercano.lat, masCercano.lon], 12);
 
-        const contenidoGrande = `<div class="tooltip-destacado">#${masCercano.num}<br>${masCercano.nombre}<br> (más cercana)`;
+        const contenidoGrande = `<div class="tooltip-destacado">#${masCercano.num}<br>${masCercano.nombre}<br>(más cercana)</div>`;
         masCercano.marker.unbindTooltip();
         masCercano.marker.bindTooltip(contenidoGrande, {
           permanent: true,
@@ -149,4 +149,4 @@
   </script>
 </body>
 </html>
-```
+
