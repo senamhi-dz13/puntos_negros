@@ -8,6 +8,15 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
     #map { height: 100vh; }
+    .tooltip-normal {
+      font-size: 14px;
+      font-weight: normal;
+    }
+    .tooltip-destacado {
+      font-size: 28px;
+      font-weight: bold;
+      color: red;
+    }
   </style>
 </head>
 <body>
@@ -16,31 +25,47 @@
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    const ubicacionesFijas = [
-      { nombre: "Estación 1", coords: [-12.07, -77.05] },
-      { nombre: "Estación 2", coords: [-12.10, -77.04] },
-      { nombre: "Estación 3", coords: [-12.12, -77.02] }
+    const estaciones = [
+      { num: 1, nombre: "San Gaban", prov: "CARABAYA", dist: "SAN GABAN", lat: -13.46087222, lon: -70.40998611 },
+      { num: 2, nombre: "Tambopata", prov: "SANDIA", dist: "SAN JUAN DEL ORO", lat: -14.22528611, lon: -69.16178333 },
+      { num: 3, nombre: "Limbani", prov: "SANDIA", dist: "LIMBANI", lat: -14.13968611, lon: -69.68701944 },
+      { num: 4, nombre: "Cuyo Cuyo", prov: "SANDIA", dist: "CUYOCUYO", lat: -14.48884167, lon: -69.55003611 },
+      { num: 5, nombre: "Macusani", prov: "CARABAYA", dist: "MACUSANI", lat: -14.06675, lon: -70.42205556 },
+      { num: 6, nombre: "Crucero", prov: "CARABAYA", dist: "CRUCERO", lat: -14.36419444, lon: -70.02591667 },
+      { num: 7, nombre: "Progreso", prov: "AZANGARO", dist: "ASILLO", lat: -14.67169444, lon: -70.36780556 },
+      { num: 8, nombre: "Muñani", prov: "AZANGARO", dist: "MUÑANI", lat: -14.76694444, lon: -69.95180556 },
+      { num: 9, nombre: "Putina", prov: "SAN ANTONIO DE PUTINA", dist: "PUTINA", lat: -14.91719444, lon: -70.19047222 },
+      { num: 10, nombre: "Azangaro", prov: "AZANGARO", dist: "AZANGARO", lat: -14.921, lon: -69.87569444 },
+      { num: 33, nombre: "Rincon De La Cruz", prov: "PUNO", dist: "ACORA", lat: -15.99016667, lon: -69.80961111 },
+      { num: 34, nombre: "Ilave", prov: "EL COLLAO", dist: "ILAVE", lat: -16.05994444, lon: -69.64038889 },
+      { num: 35, nombre: "Juli", prov: "CHUCUITO", dist: "JULI", lat: -16.20377778, lon: -69.45991667 },
+      { num: 36, nombre: "Tahuaco - Yunguyo", prov: "YUNGUYO", dist: "YUNGUYO", lat: -16.30783333, lon: -69.07472222 },
+      { num: 37, nombre: "Desaguadero", prov: "CHUCUITO", dist: "DESAGUADERO", lat: -16.56363889, lon: -69.03666667 },
+      { num: 38, nombre: "Isla Suana", prov: "YUNGUYO", dist: "ANAPIA", lat: -16.32991667, lon: -68.85033333 },
+      { num: 39, nombre: "Pizacoma", prov: "CHUCUITO", dist: "PISACOMA", lat: -16.90434722, lon: -69.36952778 },
+      { num: 40, nombre: "Mazo cruz", prov: "EL COLLAO", dist: "SANTA ROSA", lat: -16.73888889, lon: -69.71544444 },
+      { num: 41, nombre: "Capazo", prov: "EL COLLAO", dist: "CAPASO", lat: -17.18269167, lon: -69.73908889 }
     ];
 
-    const map = L.map('map').setView([-12.07, -77.05], 13);
+    const map = L.map('map').setView([-14.5, -69.5], 8);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Crear marcadores con tooltips permanentes
     const marcadores = [];
-    ubicacionesFijas.forEach(ubic => {
-      const marker = L.marker(ubic.coords).addTo(map);
-      const tooltip = marker.bindTooltip(ubic.nombre, {
+    estaciones.forEach(est => {
+      const contenido = `<div class="tooltip-normal">#${est.num}<br>${est.nombre}<br>${est.dist}<br>${est.prov}</div>`;
+      const marker = L.marker([est.lat, est.lon]).addTo(map);
+      const tooltip = marker.bindTooltip(contenido, {
         permanent: true,
         direction: 'top',
-        offset: [0, -10]
+        offset: [0, -10],
+        className: 'tooltip-normal'
       }).openTooltip();
-      marcadores.push({ marker, coords: ubic.coords, nombre: ubic.nombre, tooltip });
+      marcadores.push({ ...est, marker });
     });
 
-    // Función para calcular distancia entre dos coordenadas
     function distancia(lat1, lon1, lat2, lon2) {
       const R = 6371e3;
       const φ1 = lat1 * Math.PI / 180;
@@ -54,22 +79,20 @@
 
     function encontrarMasCercano(userLat, userLon) {
       let minDist = Infinity;
-      let marcadorCercano = null;
+      let cercano = null;
       marcadores.forEach(m => {
-        const d = distancia(userLat, userLon, m.coords[0], m.coords[1]);
+        const d = distancia(userLat, userLon, m.lat, m.lon);
         if (d < minDist) {
           minDist = d;
-          marcadorCercano = m;
+          cercano = m;
         }
       });
-      return marcadorCercano;
+      return cercano;
     }
 
-    // No hacer zoom ni setView automático al localizar usuario
     map.locate();
 
     map.on('locationfound', e => {
-      // Marcador para el usuario con tooltip fijo "Tú"
       L.circleMarker(e.latlng, {
         radius: 8,
         color: 'blue',
@@ -77,19 +100,17 @@
         fillOpacity: 0.6
       }).addTo(map).bindTooltip("Tú", { permanent: true, direction: 'right' }).openTooltip();
 
-      // Encontrar estación más cercana
       const masCercano = encontrarMasCercano(e.latitude, e.longitude);
       if (masCercano) {
-        // Centrar mapa y hacer zoom en estación más cercana
-        map.setView(masCercano.coords, 16);
+        map.setView([masCercano.lat, masCercano.lon], 12); // 16 - 4 = 12
 
-        // Cambiar texto tooltip y resaltar estación en rojo
-        const nuevoTexto = `${masCercano.nombre} (más cercana)`;
+        const contenidoGrande = `<div class="tooltip-destacado">#${masCercano.num}<br>${masCercano.nombre} (más cercana)<br>${masCercano.dist}<br>${masCercano.prov}</div>`;
         masCercano.marker.unbindTooltip();
-        masCercano.marker.bindTooltip(nuevoTexto, {
+        masCercano.marker.bindTooltip(contenidoGrande, {
           permanent: true,
           direction: 'top',
-          offset: [0, -10]
+          offset: [0, -10],
+          className: 'tooltip-destacado'
         }).openTooltip();
 
         masCercano.marker.setIcon(L.icon({
@@ -100,9 +121,10 @@
       }
     });
 
-    map.on('locationerror', e => {
+    map.on('locationerror', () => {
       alert("No se pudo detectar tu ubicación.");
     });
   </script>
 </body>
 </html>
+```
