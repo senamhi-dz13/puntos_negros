@@ -80,11 +80,13 @@
 estaciones.forEach(est => {
   // Se crea un marcador como círculo negro
   const marker = L.circleMarker([est.lat, est.lon], {
-    radius: 6,
+    radius: 10,  // más grande
     color: 'black',
     fillColor: 'black',
-    fillOpacity: 1
+    fillOpacity: 1,
+    interactive: true  // asegúrate de que sea clickeable
   }).addTo(map);
+
 
   // Tooltip solo con número, permanente
   marker.bindTooltip(`#${est.num}`, {
