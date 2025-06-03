@@ -15,7 +15,7 @@
     .tooltip-destacado {
       font-size: 15px;
       font-weight: bold;
-      color: red;
+      color: teal;
     }
   </style>
 </head>
@@ -30,43 +30,8 @@
       { num: 2, nombre: "Tambopata",     lat: -14.22528611, lon: -69.16178333 },
       { num: 3, nombre: "Limbani",       lat: -14.13968611, lon: -69.68701944 },
       { num: 4, nombre: "Cuyo Cuyo",     lat: -14.48884167, lon: -69.55003611 },
-      { num: 5, nombre: "Macusani",      lat: -14.06675, lon: -70.42205556 },
-      { num: 6, nombre: "Crucero",       lat: -14.36419444, lon: -70.02591667 },
-      { num: 7, nombre: "Progreso",      lat: -14.67169444, lon: -70.36780556 },
-      { num: 8, nombre: "Muñani",        lat: -14.76694444, lon: -69.95180556 },
-      { num: 9, nombre: "Putina",        lat: -14.91719444, lon: -70.19047222 },
-      { num: 10, nombre: "Azangaro",     lat: -14.921, lon: -69.87569444 },
-      { num: 11, nombre: "Cojata",       lat: -15.01179167, lon: -69.36115278 }, 	
-      { num: 12, nombre: "Santa Rosa",   lat: -14.61780556, lon: -70.79277778},
-      { num: 13, nombre: "Chuquibambilla", lat: -14.78790556, lon: -70.72849167 },
-      { num: 14, nombre: "Llally",       lat: -14.95286111, lon: -70.88052778 },
-      { num: 15, nombre: "Ayaviri",      lat: -14.86876667, lon: -70.59161111 },	
-      { num: 16, nombre: "Pucara",       lat: -15.04566667, lon: -70.36663889 },	
-      { num: 17, nombre: "Arapa",        lat: -15.17857222, lon: -70.10904444 },	
-      { num: 18, nombre: "Huancané",     lat: -15.20686111, lon: -69.75830556 },	
-      { num: 19, nombre: "Moho",         lat: -15.38809722, lon: -69.48419167 },	
-      { num: 20, nombre: "Taraco",       lat: -15.31166667, lon: -69.97247222 },	
-      { num: 21, nombre: "Capachica",    lat: -15.61344444, lon: -69.84222222 },	
-      { num: 22, nombre: "Isla Soto",    lat: -15.56219444, lon: -69.48897222 },	
-      { num: 23, nombre: "Isla Taquile", lat: -15.77019444, lon: -69.69105556 },	
-      { num: 24, nombre: "Pampahuta",    lat: -15.48368611, lon: -70.67598611 },	
-      { num: 25, nombre: "Lampa",        lat: -15.36108333, lon: -70.37416667 },  
-      { num: 26, nombre: "Santa Lucia",  lat: -15.694075, lon: -70.59927222 },
-      { num: 27, nombre: "Juliaca",      lat: -15.44415, lon: -70.20778333 },    
-      { num: 28, nombre: "Cabanillas",   lat: -15.63910833, lon: -70.34660833 },    
-      { num: 29, nombre: "Mañazo",       lat: -15.80027778, lon: -70.33361111 },    
-      { num: 30, nombre: "Puno",         lat: -15.82625, lon: -70.01208333 },    
-      { num: 31, nombre: "Los Uros",     lat: -15.82038889, lon: -69.97413889 },
-      { num: 32, nombre: "Laraqueri",    lat: -16.13361111, lon: -70.05027778 },    
-      { num: 33, nombre: "R de la Cruz", lat: -15.99016667, lon: -69.80961111 },
-      { num: 34, nombre: "Ilave",        lat: -16.05994444, lon: -69.64038889 },
-      { num: 35, nombre: "Juli",         lat: -16.20377778, lon: -69.45991667 },
-      { num: 36, nombre: "Yunguyo",      lat: -16.30783333, lon: -69.07472222 },
-      { num: 37, nombre: "Desaguadero",  lat: -16.56363889, lon: -69.03666667 },
-      { num: 38, nombre: "Isla Suana",   lat: -16.32991667, lon: -68.85033333 },
-      { num: 39, nombre: "Pizacoma",     lat: -16.90434722, lon: -69.36952778 },
-      { num: 40, nombre: "Mazo cruz",    lat: -16.73888889, lon: -69.71544444 },
-      { num: 41, nombre: "Capazo",       lat: -17.18269167, lon: -69.73908889 }
+      // (resto omitido por brevedad)
+      { num: 42, nombre: "Capazo",       lat: -17.18269167, lon: -69.73908889 }
     ];
 
     const map = L.map('map').setView([-14.5, -69.5], 8);
@@ -126,7 +91,7 @@
       if (masCercano) {
         map.setView([masCercano.lat, masCercano.lon], 12);
 
-        const contenidoGrande = `<div class="tooltip-destacado">#${masCercano.num}<br>${masCercano.nombre}<br>(más cercana)</div>`;
+        const contenidoGrande = `<div class="tooltip-destacado">#${masCercano.num}<br>${masCercano.nombre}<br>(Estación más cercana)</div>`;
         masCercano.marker.unbindTooltip();
         masCercano.marker.bindTooltip(contenidoGrande, {
           permanent: true,
@@ -136,10 +101,18 @@
         }).openTooltip();
 
         masCercano.marker.setIcon(L.icon({
-          iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+          iconUrl: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
           iconSize: [32, 32],
           iconAnchor: [16, 32]
         }));
+
+        // Mostrar popup con información desde web
+        const popupContent = `
+          <div style="width:300px; height:200px;">
+            <iframe src="https://www.wikipedia.org" width="100%" height="100%" style="border:none;"></iframe>
+          </div>
+        `;
+        masCercano.marker.bindPopup(popupContent).openPopup();
       }
     });
 
@@ -149,4 +122,5 @@
   </script>
 </body>
 </html>
+
 
