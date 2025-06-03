@@ -150,11 +150,12 @@ estaciones.forEach(est => {
         }).openTooltip();
 
         // Cambiar ícono
-        masCercano.marker.setIcon(L.icon({
-          iconUrl: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
-          iconSize: [32, 32],
-          iconAnchor: [16, 32]
-        }));
+       masCercano.marker.setStyle({
+         radius: 10,
+         color: 'purple',
+         fillColor: 'yellow',
+         fillOpacity: 1
+       }); 
       }
     });
 
