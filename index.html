@@ -77,20 +77,29 @@
 
     const marcadores = [];
 
-    estaciones.forEach(est => {
-      const marker = L.marker([est.lat, est.lon]).addTo(map);
-      // Tooltip solo con número, permanente
-      marker.bindTooltip(`#${est.num}`, {
-        permanent: true,
-        direction: 'top',
-        offset: [0, -10],
-        className: 'tooltip-normal'
-      }).openTooltip();
+estaciones.forEach(est => {
+  // Se crea un marcador como círculo negro
+  const marker = L.circleMarker([est.lat, est.lon], {
+    radius: 6,
+    color: 'black',
+    fillColor: 'black',
+    fillOpacity: 1
+  }).addTo(map);
 
-      // Popup con nombre completo al hacer clic
-      marker.bindPopup(`<b>Estación #${est.num}</b><br>${est.nombre}`);
-      marcadores.push({ ...est, marker });
-    });
+  // Tooltip solo con número, permanente
+  marker.bindTooltip(`#${est.num}`, {
+    permanent: true,
+    direction: 'top',
+    offset: [0, -10],
+    className: 'tooltip-normal'
+  }).openTooltip();
+
+  // Popup con nombre completo al hacer clic
+  marker.bindPopup(`<b>Estación #${est.num}</b><br>${est.nombre}`);
+
+  marcadores.push({ ...est, marker });
+});
+
 
     function distancia(lat1, lon1, lat2, lon2) {
       const R = 6371e3;
