@@ -15,7 +15,7 @@
     .tooltip-destacado {
       font-size: 15px;
       font-weight: bold;
-      color: teal;
+      color: RebeccaPurple;
     }
   </style>
 </head>
@@ -128,10 +128,10 @@
 
       const masCercano = encontrarMasCercano(e.latlng.lat, e.latlng.lng);
       if (masCercano) {
-        map.setView([masCercano.lat, masCercano.lon], 15);
+        map.setView([masCercano.lat, masCercano.lon], 8);
 
         // Cambiar tooltip solo para la estación más cercana
-        const tooltipHTML = `<div class="tooltip-destacado">#${masCercano.num}<br>${masCercano.nombre}<br>(Estación)<br>(más cercana)</div>`;
+        const tooltipHTML = `<div class="tooltip-destacado">#${masCercano.num}<br>${masCercano.nombre}<br>(Estación<br>más cercana)</div>`;
         masCercano.marker.unbindTooltip();
         masCercano.marker.bindTooltip(tooltipHTML, {
           permanent: true,
